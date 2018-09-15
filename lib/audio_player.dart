@@ -102,25 +102,24 @@ class AudioPlayerState extends State<AudioPlayerWidget> {
     }
   }
 
+  void sliderChange(double position) {
+
+  }
+
   Widget _buildDuration() {
     return new Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
+      children:  <Widget>[
         new Container(
-          padding: EdgeInsets.all(36.00),
+          padding: EdgeInsets.fromLTRB(48.00, 00.00, 48.00, 00.00),
           child: new Slider(
+              onChanged: sliderChange,
               value: _position?.inMilliseconds?.toDouble() ?? 0.0,
               min: 0.0,
-              max: _duration.inMilliseconds.toDouble()
+              max: _duration?.inMilliseconds?.toDouble() ?? 0.0
           ),
         ),
-        new Text(
-          _position != null
-              ? '${_positionText ?? ''} / ${_durationText ?? ''}'
-              : _duration != null ? _durationText : '',
-          style: new TextStyle(fontSize: 24.00),
-        )
-      ]
+      ],
     );
   }
 
