@@ -16,9 +16,42 @@ class AudioPlayerWidget extends StatefulWidget {
 
 class AudioPlayerState extends State<AudioPlayerWidget> {
 
-  AudioPlayer audioPlayer = new AudioPlayer();
+  AudioPlayer _audioPlayer;
+  Duration _duration;
+  Duration _position;
+
+  get _durationText => _duration?.inSeconds?.toString() ?? '';
+  get _positionText => _position?.inSeconds?.toString() ?? '';
+
   var localFilePath;
   bool isPlaying = false;
+
+  void initAudioPlayer() {
+    _audioPlayer = new AudioPlayer();
+    _audioPlayer.durationHandler = (d) => setState((){
+      _duration = d;
+    });
+
+    _audioPlayer.positionHandler = (p) => setState(() {
+      _position = p;
+    });
+
+    _audioPlayer.completionHandler = () {
+      //TODO: On Completion code goes here
+      setState(() {
+        _position = _duration;
+      });
+    };
+
+    _audioPlayer.errorHandler = (msg) {
+      print('audioPlayer error : $msg');
+      setState(() {
+        isPlaying = false;
+        _duration = new Duration(seconds: 0);
+        _position = new Duration(seconds: 0);
+      });
+    };
+  }
 
   Future _loadFile() async {
     final bytes = await _loadFileBytes();
@@ -42,14 +75,14 @@ class AudioPlayerState extends State<AudioPlayerWidget> {
   Future _play() async {
     print("Playing File");
     await _loadFile();
-    await audioPlayer.play(localFilePath, isLocal:true);
+    await _audioPlayer.play(localFilePath, isLocal:true);
     setState(() {
       isPlaying = true;
     });
   }
 
   Future _pause() async {
-    await audioPlayer.pause();
+    await _audioPlayer.pause();
     setState(() {
       isPlaying = false;
     });
@@ -69,10 +102,44 @@ class AudioPlayerState extends State<AudioPlayerWidget> {
     }
   }
 
+  Widget _buildDuration() {
+    return new Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        new Container(
+          padding: EdgeInsets.all(36.00),
+          child: new Slider(
+              value: _position?.inMilliseconds?.toDouble() ?? 0.0,
+              min: 0.0,
+              max: _duration.inMilliseconds.toDouble()
+          ),
+        ),
+        new Text(
+          _position != null
+              ? '${_positionText ?? ''} / ${_durationText ?? ''}'
+              : _duration != null ? _durationText : '',
+          style: new TextStyle(fontSize: 24.00),
+        )
+      ]
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Container(
-      child: _buildButton()
+      child: new Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          _buildButton(),
+          _buildDuration()
+        ],
+      )
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initAudioPlayer();
   }
 }
