@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:path_provider/path_provider.dart';
+import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
+
 
 void main() => runApp(new MyApp());
 
@@ -35,13 +42,30 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  var localFilePath;
+
+
+  Future<Uint8List> _loadFileBytes() async {
+    final data = await rootBundle.load('assets/english1.mp3');
+    final bytes = data.buffer.asUint8List();
+    return bytes;
   }
+
+  Future _loadFile() async {
+    final bytes = await _loadFileBytes();
+    final dir = await getApplicationDocumentsDirectory();
+    final file = new File('${dir.path}/english1.mp3');
+
+    await file.writeAsBytes(bytes);
+    if (await file.exists()) {
+      setState(() {
+        localFilePath = file.path;
+      });
+    }
+  }
+
+  AudioPlayer audioPlayer = new AudioPlayer();
 
   void _likedVoice() {
 
@@ -49,6 +73,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _dislikedVoice() {
 
+  }
+
+  Future _playLocal() async {
+    print("Playing File");
+    await _loadFile();
+    await audioPlayer.play(localFilePath, isLocal:true);
   }
 
   @override
@@ -69,7 +99,10 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               new Icon(Icons.account_circle, size: 96.00),
-              new Icon(Icons.play_arrow, size: 48.00),
+              new MaterialButton(
+                child: new Icon(Icons.play_arrow, size: 48.00),
+                onPressed: _playLocal,
+              ),
               new Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
