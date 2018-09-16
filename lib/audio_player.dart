@@ -130,7 +130,7 @@ class AudioPlayerState extends State<AudioPlayerWidget> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           _buildButton(),
-          _buildDuration()
+          //_buildDuration()
         ],
       )
     );

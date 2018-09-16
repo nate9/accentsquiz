@@ -29,14 +29,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  void _likedVoice() {
-
-  }
-
-  void _dislikedVoice() {
-
-  }
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(

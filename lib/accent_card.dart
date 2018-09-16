@@ -5,25 +5,24 @@ class DraggableAccentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        new Icon(Icons.account_circle, size: 96.00),
-        new AudioPlayerWidget(),
-        new Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            new MaterialButton(
-                child: Icon(Icons.check),
-                color: Colors.green,
-                onPressed: null),
-            new MaterialButton(
-                child: Icon(Icons.cancel),
-                color: Colors.red,
-                onPressed: null),
-          ],
+    return new Container(
+      margin: const EdgeInsets.all(50.0),
+      padding: const EdgeInsets.all(0.0),
+      decoration: new BoxDecoration(
+        border: new Border.all(
+            color: Colors.black,
+            width: 5.0,
         ),
-      ],
+        borderRadius: BorderRadius.circular(5.0),
+        color: Colors.yellow,
+      ),
+      child: new Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          new Icon(Icons.account_circle, size: 96.00),
+          new AudioPlayerWidget(),
+        ],
+      ),
     );
   }
 }
@@ -95,9 +94,24 @@ class CardsSectionDraggableState extends State<CardsSectionDraggable> {
         onAccept: (_) {
           //TODO: Animations!
           //TODO: Swap cards
-          setState(() => this.mDragState = dragState);
+          setState(() => this.mDragState = DragState.none);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                content: new Text("Thanks for playing"),
+                actions: <Widget>[
+                  new RaisedButton(
+                    child: new Text("You're welcome"),
+                    onPressed: (){
+                      Navigator.of(context).pop();
+                    })
+                ],
+              );
+            }
+          );
         },
-        onLeave: (_) => setState(() => this.mDragState = dragState),
+        onLeave: (_) => setState(() => this.mDragState = DragState.none),
       )
     );
   }
@@ -114,26 +128,3 @@ class CardsSectionDraggableState extends State<CardsSectionDraggable> {
     );
   }
 }
-
-
-
-/*
-new Column(
-mainAxisAlignment: MainAxisAlignment.center,
-children: <Widget>[
-new Icon(Icons.account_circle, size: 96.00),
-new Row(
-mainAxisAlignment: MainAxisAlignment.center,
-children: <Widget>[
-new MaterialButton(
-child: Icon(Icons.check),
-color: Colors.green,
-onPressed: _likedVoice),
-new MaterialButton(
-child: Icon(Icons.cancel),
-color: Colors.red,
-onPressed: _dislikedVoice),
-],
-),
-],
-)*/
